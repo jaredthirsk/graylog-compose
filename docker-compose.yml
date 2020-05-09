@@ -66,10 +66,6 @@ services:
       #GRAYLOG_MONGODB_MAX_CONNECTIONS: 100
       #GRAYLOG_MONGODB_THREADS_ALLOWED_TO_BLOCK_MULTIPLIER: 5
       #GRAYLOG_ELASTICSEARCH_CLUSTER_NAME: graylog
-    
-    links:
-      - mongodb:mongo
-      - elasticsearch
 
 volumes:
   mongo_data:
