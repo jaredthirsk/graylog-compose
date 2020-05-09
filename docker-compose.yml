@@ -66,10 +66,6 @@ services:
     links:
       - "elasticsearch:elasticsearch"
       - "mongodb:mongodb.service"
-    ports:
-      - "9000:9000"
-      - "12201/udp:12201/udp"
-      - "1514/udp:1514/udp"
 
 volumes:
   mongo_data:
