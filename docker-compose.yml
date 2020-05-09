@@ -3,7 +3,7 @@ version: '2'
 services:
   mongodb:
     image: mongo:3
-    command: "mongod --config /conf/mongo.conf"
+    #command: "mongod --config /conf/mongo.conf"
     volumes:
       - mongo_data:/data/db
 #      - "./mongo:/conf/"
