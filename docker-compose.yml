@@ -1,30 +1,23 @@
 # Docker-compose for Graylog
 version: '2'
-volumes:
-  esdata:
-    driver: local
-  graylogdata:
-    driver: local
-  mongodata:
-    driver: local
-
 services:
   mongodb:
     image: mongo:3
     command: "mongod --config /conf/mongo.conf"
     volumes:
-      - "mongodata:/data"
-      - "./mongo:/conf/"
+      - mongo_data:/data/db
+#      - "./mongo:/conf/"
 
   elasticsearch:
-    image: elasticsearch:2
-    command: "elasticsearch -Des.cluster.name=graylog"
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
     volumes:
-      - "esdata:/usr/share/elasticsearch/data"
-      - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro"
-      - "./elasticsearch/logging.yml:/usr/share/elasticsearch/config/logging.yml:ro"
+      - es_data:/usr/share/elasticsearch/data
     environment:
-      ES_MAX_MEM: 1g
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      #ES_MAX_MEM: 1g
     ports:
      - "9200:9200"
      - "9300:9300"
@@ -36,20 +29,40 @@ services:
         soft: 65536
         hard: 65536
     mem_limit: 1536m
-
+    
+    
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
   graylog:
-    image: graylog2/server:latest
+    image: graylog2/graylog:3.2
+    volumes:
+      - graylog_journal:/usr/share/graylog/data/journal
     environment:
       GRAYLOG_PASSWORD_SECRET: Bgw7mYROifuwMCojIcuQ0PYCiuwtOWNSIQBV6fbIfNIzpFFxKrVcRDOxJOPBmjHPhOA5uT928Ll9LlfpPEWxsy9a4VSgZebo
-      GRAYLOG_ROOT_PASSWORD_SHA2: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
-      GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
-      GRAYLOG_MONGODB_URI: mongodb://mongodb.service/graylog
-      GRAYLOG_MONGODB_MAX_CONNECTIONS: 100
-      GRAYLOG_MONGODB_THREADS_ALLOWED_TO_BLOCK_MULTIPLIER: 5
-      GRAYLOG_ELASTICSEARCH_CLUSTER_NAME: graylog
-    volumes:
-      - "graylogdata:/opt/graylog/data"
-      - "./plugin/:/opt/graylog/plugin/"
+      GRAYLOG_ROOT_PASSWORD_SHA2: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      GRAYLOG_HTTP_EXTERNAL_URI: http://127.0.0.1:9000/
+    links:
+      - mongodb:mongo
+      - elasticsearch
+    depends_on:
+      - mongodb
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+      #GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
+      #GRAYLOG_MONGODB_URI: mongodb://mongodb.service/graylog
+      #GRAYLOG_MONGODB_MAX_CONNECTIONS: 100
+      #GRAYLOG_MONGODB_THREADS_ALLOWED_TO_BLOCK_MULTIPLIER: 5
+      #GRAYLOG_ELASTICSEARCH_CLUSTER_NAME: graylog
+    
     links:
       - "elasticsearch:elasticsearch"
       - "mongodb:mongodb.service"
@@ -58,21 +71,10 @@ services:
       - "12201/udp:12201/udp"
       - "1514/udp:1514/udp"
 
-  # Based on Logspout by Gliderlabs
-  # https://github.com/gliderlabs/logspout
-  #
-  # micahhausler created a module to send Docker logs
-  # from logspout to Graylog:
-  # https://github.com/micahhausler/logspout-gelf
-  logspout:
-    image: "micahhausler/logspout:gelf"
-    hostname: logspout
-    command: "gelf://graylog:12201"
-    environment:
-      LOGSPOUT: ignore
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    links:
-      - "graylog:graylog"
-    ports:
-      - "8000:80"
+volumes:
+  mongo_data:
+    driver: local
+  es_data:
+    driver: local
+  graylog_journal:
+    driver: local
