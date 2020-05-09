@@ -44,6 +44,20 @@ services:
       # echo -n "Enter Password: " && head -1 </dev/stdin | tr -d '\n' | sha256sum | cut -d" " -f1
       GRAYLOG_ROOT_PASSWORD_SHA2: ${GRAYLOG_ROOT_PASSWORD_SHA2:-"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"}
       GRAYLOG_HTTP_EXTERNAL_URI: ${GRAYLOG_HTTP_EXTERNAL_URI:-"http://127.0.0.1:9000/"}
+      #GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
+      #GRAYLOG_MONGODB_URI: mongodb://mongodb.service/graylog
+      #GRAYLOG_MONGODB_MAX_CONNECTIONS: 100
+      #GRAYLOG_MONGODB_THREADS_ALLOWED_TO_BLOCK_MULTIPLIER: 5
+      #GRAYLOG_ELASTICSEARCH_CLUSTER_NAME: graylog
+      #GRAYLOG_TRANSPORT_EMAIL_HOSTNAME=smtp.example.com
+      #GRAYLOG_TRANSPORT_EMAIL_ENABLED=true
+      #GRAYLOG_TRANSPORT_EMAIL_PORT=25
+      #GRAYLOG_TRANSPORT_EMAIL_USE_AUTH=false
+      #GRAYLOG_TRANSPORT_EMAIL_USE_TLS=false
+      #GRAYLOG_TRANSPORT_EMAIL_USE_SSL=false
+      #GRAYLOG_TRANSPORT_FROM_EMAIL=youremail@yourdomain.com
+      #GRAYLOG_TRANSPORT_SUBJECT_PREFIX=[graylog]
+
     links:
       - mongodb:mongo
       - elasticsearch
@@ -61,11 +75,6 @@ services:
       - 12201:12201
       # GELF UDP
       - 12201:12201/udp
-      #GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
-      #GRAYLOG_MONGODB_URI: mongodb://mongodb.service/graylog
-      #GRAYLOG_MONGODB_MAX_CONNECTIONS: 100
-      #GRAYLOG_MONGODB_THREADS_ALLOWED_TO_BLOCK_MULTIPLIER: 5
-      #GRAYLOG_ELASTICSEARCH_CLUSTER_NAME: graylog
 
 volumes:
   mongo_data:
