@@ -64,8 +64,8 @@ services:
       #GRAYLOG_ELASTICSEARCH_CLUSTER_NAME: graylog
     
     links:
-      - "elasticsearch:elasticsearch"
-      - "mongodb:mongodb.service"
+      - mongodb:mongo
+      - elasticsearch
 
 volumes:
   mongo_data:
