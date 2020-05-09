@@ -36,6 +36,7 @@ services:
     image: graylog2/graylog:3.2
     volumes:
       - graylog_journal:/usr/share/graylog/data/journal
+      - graylog_plugins:/usr/share/graylog/plugin/
     environment:
       # This field is used to encrypt Graylog passwords.
       GRAYLOG_PASSWORD_SECRET: ${GRAYLOG_PASSWORD_SECRET:-"Bgw7mYROifuwMCojIcuQ0PYCiuwtOWNSIQBV6fbIfNIzpFFxKrVcRDOxJOPBmjHPhOA5uT928Ll9LlfpPEWxsy9a4VSgZebo"}
@@ -82,4 +83,6 @@ volumes:
   es_data:
     driver: local
   graylog_journal:
+    driver: local
+  graylog_plugins:
     driver: local
