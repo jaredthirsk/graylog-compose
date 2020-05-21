@@ -76,6 +76,8 @@ services:
       - 12201:12201
       # GELF UDP
       - 12201:12201/udp
+      # RAW UDP
+      - 5555:5555/udp
 
 volumes:
   mongo_data:
