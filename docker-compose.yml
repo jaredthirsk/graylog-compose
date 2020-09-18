@@ -29,6 +29,11 @@ services:
         soft: 65536
         hard: 65536
     mem_limit: 1536m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "10"
     
     
   # Graylog: https://hub.docker.com/r/graylog/graylog/
